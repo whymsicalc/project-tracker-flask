@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hackbright</title>
+</head>
+<body>
+    <p>List of Students</p>
+    <ul>
+        {% for student in students %}
+        <li>{{ student[0] }} {{ student[1] }}</li>
+        {% endfor %}
+    </ul>
+    <p>List of Projects</p>
+    <ul>
+        {% for project in projects %}
+        <li>{{ project[0] }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
