@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assign a Grade</title>
+</head>
+<body>
+  {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+         {{ message }}<br>
+      {% endfor %}<br>
+{% endwith %}
+<form action="/grade-added" method="POST">
+  Select the student:
+    <select name="student">
+      {% for student in students %}
+        <option value="{{ student[2] }}">{{ student[0] }} {{ student[1] }}</option>
+      {% endfor %}
+    </select><br>
+  Select the project:
+    <select name="project">
+      {% for project in projects %}
+        <option value="{{ project[0] }}">{{ project[0] }}</option>
+      {% endfor %}
+    </select><br>
+  Enter the grade:
+    <input type="number" name="grade"><br>
+  <button type="submit">Submit Grade</button>
+</form>
+</body>
+</html>

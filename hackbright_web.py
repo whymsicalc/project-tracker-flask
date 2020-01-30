@@ -1,10 +1,12 @@
 """A web application for tracking projects, students, and student grades."""
 
-from flask import Flask, request, render_template
+from flask import Flask, flash, redirect, request, render_template
 
 import hackbright
 
 app = Flask(__name__)
+app.secret_key = 'APPSECRETKEY'
+
 
 @app.route("/")
 def get_homepage():
@@ -70,6 +72,55 @@ def get_project_info():
     return render_template("project_info.html", title=title,
                            description=description, max_grade=max_grade,
                            grades=grades_by_github)
+
+
+@app.route("/project-add")
+def get_project_add_form():
+    """Show form for adding a project."""
+
+    return render_template("project_add.html")
+
+
+@app.route("/project-added", methods=["POST"])
+def project_added():
+    """Show information about added project."""
+
+    title = request.form.get("title")
+    description = request.form.get("description")
+    max_grade = request.form.get("max_grade")
+
+    hackbright.make_new_project(title, description, max_grade)
+
+    return render_template("project_added.html", title=title)
+
+
+@app.route("/grade-add")
+def get_grade_add_form():
+    """Show form for adding a student project grade."""
+    students = hackbright.get_all_student_names()
+    projects = hackbright.get_all_project_names()
+
+    return render_template("assign_grade.html", students=students, projects=projects)
+
+
+@app.route("/grade-added", methods=["POST"])
+def grade_added():
+    """Show information about added grade."""
+    student = request.form.get("student")
+    project = request.form.get("project")
+    grade = request.form.get("grade")
+
+    github_tup = hackbright.get_github_by_id(student)
+    github = github_tup[0]
+
+    if hackbright.get_grade_by_github_title(github, project):
+        hackbright.update_grade_by_github_title(github, project, grade)
+        flash('Grade successfully updated.')
+    else:
+        hackbright.assign_grade(github, project, grade)
+        flash('Grade successfully added.')
+
+    return redirect("/grade-add")
 
 
 if __name__ == "__main__":
